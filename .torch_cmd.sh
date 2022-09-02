@@ -3,6 +3,7 @@ torchLib=("pytorch" "pytorch_sparse" "pytorch_scatter" "pytorch_geometric")
 declare -A torchGit=(["pytorch"]='https://github.com/pytorch/pytorch.git' ["pytorch_sparse"]='https://github.com/rusty1s/pytorch_sparse.git' ["pytorch_scatter"]='https://github.com/rusty1s/pytorch_scatter.git' ["pytorch_geometric"]='https://github.com/pyg-team/pytorch_geometric.git')
 
 function ptsetup() {
+	
 	while true; do
 		echo "Provide new env vars or press Enter to selected [default]"
 		read -p "TORCH_ENV [$TORCH_ENV]: " env
@@ -82,6 +83,7 @@ function ptpip() {
 }
 
 function ptsetdir() {
+	echo $1
 	if [[ ! -d "$1" ]]; then
 		while true; do
 			read -p "$1 doesn't exist. Do you want to create it now? [y/n] " yn
