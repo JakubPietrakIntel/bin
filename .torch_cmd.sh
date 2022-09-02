@@ -32,7 +32,7 @@ function ptsetup() {
 }
 
 function ptupdate() {
-
+	export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
 	if [[ $1 == "stack" ]]; then
 		echo "*** ***** Updating full pytorch stack! ***** ***"
 		for i in ${!torchLib[@]}; do ptupdate ${torchLib[$i]}; done
@@ -57,7 +57,7 @@ function ptupdate() {
 }
 
 function ptinstall() {
-
+	export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
 	if [[ $1 == "stack" ]]; then
 		echo "*** ***** Installing full pytorch stack! ***** ***"
 		for i in ${!torchLib[@]}; do ptinstall ${torchLib[$i]}; done
