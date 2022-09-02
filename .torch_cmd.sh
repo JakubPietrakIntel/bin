@@ -48,7 +48,7 @@ function ptupdate() {
 		python setup.py clean
 
 		ptpip $1 --force-reinstall
-		ptgitlog
+		ptgitlog $1
 
 		printf "%0.s-" {1..10} && echo " UPDATE COMPLETED!"
 		cd ~
