@@ -3,7 +3,7 @@ torchLib=("pytorch" "pytorch_sparse" "pytorch_scatter" "pytorch_geometric")
 declare -A torchGit=(["pytorch"]='https://github.com/pytorch/pytorch.git' ["pytorch_sparse"]='https://github.com/rusty1s/pytorch_sparse.git' ["pytorch_scatter"]='https://github.com/rusty1s/pytorch_scatter.git' ["pytorch_geometric"]='https://github.com/pyg-team/pytorch_geometric.git')
 
 function ptsetup() {
-	
+
 	while true; do
 		echo "Provide new env vars or press Enter to selected [default]"
 		read -p "TORCH_ENV [$TORCH_ENV]: " env
@@ -14,10 +14,19 @@ function ptsetup() {
 		ptsetdir $dir
 		read -p "Do you want to [U] update or [I] install new Pytorch Stack now? Press [Q] to exit. " uie
 		case $uie in
-			[Uu]* ) ptupdate stack; break;;
-			[Ii]* ) ptinstall stack; break;;
-			[Qq]* ) echo "Quit"; return 1;;
-			* ) echo "Please answer Uu/Ii/Qq";;
+		[Uu]*)
+			ptupdate stack
+			break
+			;;
+		[Ii]*)
+			ptinstall stack
+			break
+			;;
+		[Qq]*)
+			echo "Quit"
+			return 1
+			;;
+		*) echo "Please answer Uu/Ii/Qq" ;;
 		esac
 	done
 }
@@ -40,7 +49,7 @@ function ptupdate() {
 
 		ptpip $1 --force-reinstall
 		ptgitlog
-		
+
 		printf "%0.s-" {1..10} && echo " UPDATE COMPLETED!"
 		cd ~
 
@@ -88,9 +97,12 @@ function ptsetdir() {
 		while true; do
 			read -p "$1 doesn't exist. Do you want to create it now? [y/n] " yn
 			case $yn in
-				[Yy]* ) mkdir -p $1; break;;
-				[Nn]* ) return 1;;
-				* ) echo "Please answer yes or no.";;
+			[Yy]*)
+				mkdir -p $1
+				break
+				;;
+			[Nn]*) return 1 ;;
+			*) echo "Please answer yes or no." ;;
 			esac
 		done
 	fi
@@ -104,18 +116,20 @@ function ptgetdir() {
 
 function ptsetenv() {
 	if ! { conda env list | grep $1; } >/dev/null 2>&1; then
-	while true; do
-		read -p "$1 doesn't exist. Do you want to create a new conda env now? [y/n] " yn
-		case $yn in
-			[Yy]* ) ptconda $1; break;;
-			[Nn]* ) return 1;;
-			* ) echo "Please answer yes or no.";;
-		esac
-	done	
+		while true; do
+			read -p "$1 doesn't exist. Do you want to create a new conda env now? [y/n] " yn
+			case $yn in
+			[Yy]*)
+				ptconda $1
+				break
+				;;
+			[Nn]*) return 1 ;;
+			*) echo "Please answer yes or no." ;;
+			esac
+		done
 	fi
 	export TORCH_ENV=$1
-	ptgetenv 
-	
+	ptgetenv
 }
 
 function ptgetenv() {
@@ -140,4 +154,3 @@ function ptgitlog() {
 	printf "%0.s-" {1..10} && echo ' Git Log'
 	git log -1
 }
-
