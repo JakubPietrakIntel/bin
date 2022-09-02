@@ -64,6 +64,7 @@ function ptinstall() {
 	else
 		echo "*** ***** Installing torch repo in "$TORCH_DIR"/"$1" ***** ***"
 		pttest
+		conda activate $TORCH_ENV
 		cd $TORCH_DIR
 		git clone --recursive ${torchGit["$1"]}
 		cd $TORCH_DIR/$1
