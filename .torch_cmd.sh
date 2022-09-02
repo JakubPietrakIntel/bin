@@ -43,7 +43,7 @@ function ptupdate() {
 		cd $TORCH_DIR/$1
 		git config --global --add safe.directory $TORCH_DIR/$1
 		git pull origin master
-		git subomodule sync
+		git submodule sync
 		git submodule update --init --recursive
 		python setup.py clean
 
