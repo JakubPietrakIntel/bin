@@ -144,7 +144,8 @@ function ptconda() {
 	conda info
 	conda install -y mkl mkl-include
 	conda install -y gcc_linux-64 gxx_linux-64
-	conda install -y astunparse numpy ninja pyyaml setuptools cmake cffi typing_extensions future six requests dataclasses
+	conda install -y astunparse numpy ninja pyyaml setuptools cmake cffi typing_extensions future six requests dataclasses pandas
+	python -m pip install ogb --no-deps
 }
 
 function ptgitlog() {
