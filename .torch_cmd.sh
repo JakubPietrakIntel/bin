@@ -115,8 +115,13 @@ function ptgetdir() {
 	echo "Selected active TORCH_DIR=$TORCH_DIR"
 }
 
+function find_in_conda_env(){
+    conda env list | grep "${@}" >/dev/null 2>/dev/null
+}
+
 function ptsetenv() {
-	if ! { conda env list | grep $1; } >/dev/null 2>&1; then
+	env="$(conda env list | grep -w $1 | cut -f1 -d' ' | xargs)"
+	if [[ $env != $1 ]]; then
 		while true; do
 			read -p "$1 doesn't exist. Do you want to create a new conda env now? [y/n] " yn
 			case $yn in
@@ -134,6 +139,7 @@ function ptsetenv() {
 }
 
 function ptgetenv() {
+	conda activate $TORCH_ENV
 	echo "Selected active TORCH ENV=$TORCH_ENV"
 }
 
@@ -144,8 +150,9 @@ function ptconda() {
 	conda info
 	conda install -y mkl mkl-include
 	conda install -y gcc_linux-64 gxx_linux-64
-	conda install -y astunparse numpy ninja pyyaml setuptools cmake cffi typing_extensions future six requests dataclasses pandas
+	conda install -y astunparse numpy ninja pyyaml setuptools cmake cffi typing_extensions future six requests dataclasses pandas pytest
 	python -m pip install ogb --no-deps
+	python -m pip install pytorch_lightning
 }
 
 function ptgitlog() {
