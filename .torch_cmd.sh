@@ -57,22 +57,28 @@ function ptupdate() {
 
 function ptinstall() {
 
-	while getopts n:b:r: flag
+	while getopts "n:b:r:" flag
 	do
 		case "${flag}" in
-			n) name=${OPTARG};;
-			b) branch=${OPTARG};;
-			r) repo=${OPTARG};;
+			n) name=$OPTARG;;
+			b) branch=$OPTARG;;
+			r) repo=$OPTARG;;
 		esac
 	done
 
 	if [[ -z $branch ]]; then branch='master'; fi
 	if [[ -z $repo ]]; then repo=${torchGit["$name"]}; fi
+	if [[ -z $name ]]; then 
+		echo "Torch repo name not provided"
+		echo "Usage: ptinstall -n <repo name> -b <branch> -r <repo origin>"
+		return 0 
+	fi
+
 	if [[ $name == "stack" ]]; then
 		echo "*** ***** Installing full pytorch stack! ***** ***"
 		for i in ${!torchLib[@]}; do ptinstall -n ${torchLib[$i]}; done
 	else
-		echo "*** ***** Installing $name in $TORCH_DIR/$name from $branch ***** ***"
+		echo "*** ***** Installing $name in $TORCH_DIR/$name from $branch : $repo ***** ***"
 		pttest
 		conda activate $TORCH_ENV
 		export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
@@ -85,6 +91,9 @@ function ptinstall() {
 		printf "%0.s-" {1..10} && echo " INSTALLATION COMPLETED!"
 		cd ~
 	fi
+	unset name
+	unset branch
+	unset repo
 
 }
 
