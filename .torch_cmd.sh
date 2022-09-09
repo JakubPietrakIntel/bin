@@ -19,7 +19,7 @@ function ptsetup() {
 			break
 			;;
 		[Ii]*)
-			ptinstall stack
+			ptinstall -n stack
 			break
 			;;
 		[Qq]*)
@@ -32,7 +32,7 @@ function ptsetup() {
 }
 
 function ptupdate() {
-	export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
+
 	if [[ $1 == "stack" ]]; then
 		echo "*** ***** Updating full pytorch stack! ***** ***"
 		for i in ${!torchLib[@]}; do ptupdate ${torchLib[$i]}; done
@@ -40,13 +40,12 @@ function ptupdate() {
 		echo "*** ***** Updating torch repo in "$TORCH_DIR"/"$1" ***** ***"
 		pttest
 		conda activate $TORCH_ENV
+		export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
 		cd $TORCH_DIR/$1
-		git config --global --add safe.directory $TORCH_DIR/$1
 		git pull origin master
 		git submodule sync
 		git submodule update --init --recursive
 		python setup.py clean
-
 		ptpip $1 --force-reinstall
 		ptgitlog $1
 
@@ -57,19 +56,32 @@ function ptupdate() {
 }
 
 function ptinstall() {
-	export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
-	if [[ $1 == "stack" ]]; then
+
+	while getopts n:b:r: flag
+	do
+		case "${flag}" in
+			n) name=${OPTARG};;
+			b) branch=${OPTARG};;
+			r) repo=${OPTARG};;
+		esac
+	done
+
+	if [[ -z $branch ]]; then branch='master'; fi
+	if [[ -z $repo ]]; then repo=${torchGit["$name"]}; fi
+	if [[ $name == "stack" ]]; then
 		echo "*** ***** Installing full pytorch stack! ***** ***"
-		for i in ${!torchLib[@]}; do ptinstall ${torchLib[$i]}; done
+		for i in ${!torchLib[@]}; do ptinstall -n ${torchLib[$i]}; done
 	else
-		echo "*** ***** Installing torch repo in "$TORCH_DIR"/"$1" ***** ***"
+		echo "*** ***** Installing $name in $TORCH_DIR/$name from $branch ***** ***"
 		pttest
 		conda activate $TORCH_ENV
+		export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
 		cd $TORCH_DIR
-		git clone --recursive ${torchGit["$1"]}
-		cd $TORCH_DIR/$1
-		ptpip $1
-		ptgitlog
+		git clone -b $branch --recursive $repo
+		cd $TORCH_DIR/$name
+		ptpip $name
+		ptgitlog $name
+		git config --global --add safe.directory $TORCH_DIR/$name
 		printf "%0.s-" {1..10} && echo " INSTALLATION COMPLETED!"
 		cd ~
 	fi
@@ -112,6 +124,7 @@ function ptsetdir() {
 }
 
 function ptgetdir() {
+	cd $TORCH_DIR
 	echo "Selected active TORCH_DIR=$TORCH_DIR"
 }
 
@@ -156,10 +169,10 @@ function ptconda() {
 }
 
 function ptgitlog() {
+	name=$1
+	short=${name:2}
+	printf "%0.s-" {1..10} && echo "$short Version: " && python -c "import $short; print($short.__version__)"
 	cd $TORCH_DIR/$1
-	NAME=$1
-	SHORTNAME=${NAME:2}
-	printf "%0.s-" {1..10} && echo "$SHORTNAME Version: " && python -c "import $SHORTNAME;print($SHORTNAME.__version__)"
 	printf "%0.s-" {1..10} && echo ' Git Log'
 	git log -1
 }
