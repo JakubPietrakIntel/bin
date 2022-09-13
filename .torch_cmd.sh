@@ -10,7 +10,7 @@ function ptsetup() {
 		env=${env:-$TORCH_ENV}
 		read -p "TORCH_DIR [$TORCH_DIR]: " dir
 		dir=${dir:-$TORCH_DIR}
-		
+		ptsetenv $env
 		ptsetdir $dir
 		read -p "Do you want to [U] update or [I] install new Pytorch Stack now? Press [Q] to exit. " uie
 		case $uie in
