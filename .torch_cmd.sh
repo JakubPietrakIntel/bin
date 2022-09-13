@@ -75,9 +75,6 @@ function ptinstall() {
 		printf "%0.s-" {1..10} && echo " INSTALLATION COMPLETED!"
 		cd ~
 	fi
-	unset name
-	unset branch
-	unset repo
 
 }
 
