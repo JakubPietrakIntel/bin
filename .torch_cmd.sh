@@ -8,9 +8,9 @@ function ptsetup() {
 		echo "Provide new env vars or press Enter to selected [default]"
 		read -p "TORCH_ENV [$TORCH_ENV]: " env
 		env=${env:-$TORCH_ENV}
-		ptsetenv $env
 		read -p "TORCH_DIR [$TORCH_DIR]: " dir
 		dir=${dir:-$TORCH_DIR}
+		
 		ptsetdir $dir
 		read -p "Do you want to [U] update or [I] install new Pytorch Stack now? Press [Q] to exit. " uie
 		case $uie in
@@ -19,7 +19,7 @@ function ptsetup() {
 			break
 			;;
 		[Ii]*)
-			ptinstall -n stack
+			ptinstall stack
 			break
 			;;
 		[Qq]*)
@@ -57,37 +57,21 @@ function ptupdate() {
 
 function ptinstall() {
 
-	while getopts "n:b:r:" flag
-	do
-		case "${flag}" in
-			n) name=$OPTARG;;
-			b) branch=$OPTARG;;
-			r) repo=$OPTARG;;
-		esac
-	done
+	if [[ $1 == "stack" ]]; then
+		echo "*** ***** Updating full pytorch stack! ***** ***"
+		for i in ${!torchLib[@]}; do ptinstall ${torchLib[$i]}; done
 
-	if [[ -z $branch ]]; then branch='master'; fi
-	if [[ -z $repo ]]; then repo=${torchGit["$name"]}; fi
-	if [[ -z $name ]]; then 
-		echo "Torch repo name not provided"
-		echo "Usage: ptinstall -n <repo name> -b <branch> -r <repo origin>"
-		return 0 
-	fi
-
-	if [[ $name == "stack" ]]; then
-		echo "*** ***** Installing full pytorch stack! ***** ***"
-		for i in ${!torchLib[@]}; do ptinstall -n ${torchLib[$i]}; done
 	else
-		echo "*** ***** Installing $name in $TORCH_DIR/$name from $branch : $repo ***** ***"
+		echo "*** ***** Installing torch repo in "$TORCH_DIR"/"$1" ***** ***"
 		pttest
 		conda activate $TORCH_ENV
 		export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
 		cd $TORCH_DIR
-		git clone -b $branch --recursive $repo
-		cd $TORCH_DIR/$name
-		ptpip $name
-		ptgitlog $name
-		git config --global --add safe.directory $TORCH_DIR/$name
+		git clone --recursive ${torchGit["$1"]}
+		cd $TORCH_DIR/$1
+		ptpip $1
+		ptgitlog $1
+		git config --global --add safe.directory $TORCH_DIR/$1
 		printf "%0.s-" {1..10} && echo " INSTALLATION COMPLETED!"
 		cd ~
 	fi
