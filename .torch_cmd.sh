@@ -153,7 +153,8 @@ function ptconda() {
 	conda info
 	conda install -y mkl mkl-include
 	conda install -y gcc_linux-64 gxx_linux-64
-	conda install -y astunparse numpy ninja pyyaml setuptools cmake cffi typing_extensions future six requests dataclasses pandas pytest
+	conda install -y astunparse numpy ninja pyyaml cmake cffi typing_extensions future six requests dataclasses pandas pytest
+	python -m pip install --upgrade setuptools
 	python -m pip install ogb --no-deps
 	python -m pip install pytorch_lightning
 }
