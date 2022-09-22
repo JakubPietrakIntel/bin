@@ -88,7 +88,6 @@ function pttest() {
 }
 
 function ptpip() {
-	touch installation.log
 	if [[ $1 == "pytorch" ]]; then
 		REL_WITH_DEB_INFO=false USE_CUDA=false python -m pip install --verbose -e . $2 >> ../install_${1}.log
 	else
