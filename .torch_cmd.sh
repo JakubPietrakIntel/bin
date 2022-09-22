@@ -6,12 +6,14 @@ function ptsetup() {
 
 	while true; do
 		echo "Provide new env vars or press Enter to selected [default]"
-		read -p "Name for conda env TORCH_ENV [$TORCH_ENV]: " env
-		env=${env:-$TORCH_ENV}
 		read -p "Full path to TORCH_DIR [$TORCH_DIR], i.e. /home/usr/pyg: " dir
 		dir=${dir:-$TORCH_DIR}
-		ptsetenv $env
+		read -p "Name for conda env TORCH_ENV [$TORCH_ENV]: " env
+		env=${env:-$TORCH_ENV}
+
 		ptsetdir $dir
+		ptsetenv $env
+
 		read -p "Do you want to [U] update or [I] install new Pytorch Stack now? Press [Q] to exit. " uie
 		case $uie in
 		[Uu]*)
