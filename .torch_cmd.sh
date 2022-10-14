@@ -152,7 +152,9 @@ function ptconda() {
 	yes | conda create -n $1 python=3.9
 	conda activate $1
 	conda info
-	conda install -y mkl mkl-include
+	conda update -n base -c defaults conda
+	conda install -y mkl=2022.0.1
+	conda install -y mkl-include=2022.0.1
 	conda install -y gcc_linux-64 gxx_linux-64
 	conda install -y astunparse numpy ninja pyyaml cmake cffi typing_extensions future six requests dataclasses pandas pytest
 	python -m pip install --upgrade setuptools
