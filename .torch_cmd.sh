@@ -73,7 +73,7 @@ function ptinstall() {
 		cd $TORCH_DIR/$1
 		ptpip $1
 		ptgitlog $1
-		git config --global --add safe.directory $TORCH_DIR/$1
+		#git config --global --add safe.directory $TORCH_DIR/$1
 		printf "%0.s-" {1..10} && echo " INSTALLATION COMPLETED!"
 		cd ~
 	fi
