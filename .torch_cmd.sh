@@ -1,6 +1,6 @@
 #!/bin/bash
-torchLib=("pytorch" "pytorch_sparse" "pytorch_scatter" "pytorch_geometric")
-declare -A torchGit=(["pytorch"]='https://github.com/pytorch/pytorch.git' ["pytorch_sparse"]='https://github.com/rusty1s/pytorch_sparse.git' ["pytorch_scatter"]='https://github.com/rusty1s/pytorch_scatter.git' ["pytorch_geometric"]='https://github.com/pyg-team/pytorch_geometric.git')
+torchLib=("pytorch" "pytorch_sparse" "pytorch_scatter" "pytorch_geometric" "pyg-lib")
+declare -A torchGit=(["pytorch"]='https://github.com/pytorch/pytorch.git' ["pytorch_sparse"]='https://github.com/rusty1s/pytorch_sparse.git' ["pytorch_scatter"]='https://github.com/rusty1s/pytorch_scatter.git' ["pytorch_geometric"]='https://github.com/pyg-team/pytorch_geometric.git' ["pyg-lib"]='https://github.com/pyg-team/pyg-lib.git')
 
 function ptsetup() {
 
@@ -28,7 +28,7 @@ function ptsetup() {
 			echo "Quit"
 			return 1
 			;;
-		*) echo "Please answer Uu/Ii/Qq" ;;
+		*) echo "I don't know what to do. Valid options: [U]ptade / [I]nstall / [Q]uit" ;;
 		esac
 	done
 }
@@ -164,7 +164,11 @@ function ptconda() {
 
 function ptgitlog() {
 	name=$1
-	short=${name:2}
+	if [[ $name != 'pyg-lib' ]]; then
+		short=${name:2}
+	else
+		short=$name
+	fi
 	printf "%0.s-" {1..10} && echo "$short Version: " && python -c "import $short; print($short.__version__)"
 	cd $TORCH_DIR/$1
 	printf "%0.s-" {1..10} && echo ' Git Log'
