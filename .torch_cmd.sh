@@ -159,6 +159,7 @@ function ptconda() {
 	conda install -y astunparse numpy ninja pyyaml cmake cffi typing_extensions future six requests dataclasses pandas pytest
 	python -m pip install --upgrade setuptools
 	python -m pip install ogb --no-deps
+	python -m pip install psutil
 }
 
 function ptgitlog() {
