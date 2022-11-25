@@ -33,6 +33,16 @@ function ptsetup() {
 	done
 }
 
+function ptgitremote() {
+	for lib in ${!torchLib[@]}; do 
+		cd $TORCH_DIR/${torchLib[$lib]}
+		git remote rename origin upstream
+		git remote add origin https://github.com/JakubPietrakIntel/${torchLib[$lib]}
+		git fetch origin
+		git checkout master
+	done
+}
+
 function ptupdate() {
 
 	if [[ $1 == "stack" ]]; then
@@ -155,7 +165,7 @@ function ptconda() {
 	yes | conda create -n $1 python=3.9
 	conda activate $1
 	conda info
-	conda update -n base -c defaults conda
+	conda update -n base -c defaults conda -y
 	conda install -y mkl=2022.0.1
 	conda install -y mkl-include=2022.0.1
 	conda install -y gcc_linux-64 gxx_linux-64
