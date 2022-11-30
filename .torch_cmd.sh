@@ -1,6 +1,7 @@
 #!/bin/bash
 torchLib=("pytorch" "pytorch_sparse" "pytorch_scatter" "pytorch_geometric" "pyg-lib")
 declare -A torchGit=(["pytorch"]='https://github.com/pytorch/pytorch.git' ["pytorch_sparse"]='https://github.com/rusty1s/pytorch_sparse.git' ["pytorch_scatter"]='https://github.com/rusty1s/pytorch_scatter.git' ["pytorch_geometric"]='https://github.com/pyg-team/pytorch_geometric.git' ["pyg-lib"]='https://github.com/pyg-team/pyg-lib.git')
+#declare -A torchGit=(["pytorch"]='https://github.com/JakubPietrakIntel/pytorch.git' ["pytorch_sparse"]='https://github.com/JakubPietrakIntel/pytorch_sparse.git' ["pytorch_scatter"]='https://github.com/JakubPietrakIntel/pytorch_scatter.git' ["pytorch_geometric"]='https://github.com/JakubPietrakIntel/pytorch_geometric.git' ["pyg-lib"]='https://github.com/JakubPietrakIntel/pyg-lib.git')
 
 function ptsetup() {
 
