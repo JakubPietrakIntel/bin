@@ -1,6 +1,7 @@
 #!/bin/bash
 torchLib=("pytorch" "pytorch_sparse" "pytorch_scatter" "pytorch_geometric" "pyg-lib")
 declare -A torchGit=(["pytorch"]='https://github.com/pytorch/pytorch.git' ["pytorch_sparse"]='https://github.com/rusty1s/pytorch_sparse.git' ["pytorch_scatter"]='https://github.com/rusty1s/pytorch_scatter.git' ["pytorch_geometric"]='https://github.com/pyg-team/pytorch_geometric.git' ["pyg-lib"]='https://github.com/pyg-team/pyg-lib.git')
+declare -A torchGitUser=(["pytorch"]='https://github.com/JakubPietrakIntel/pytorch.git' ["pytorch_sparse"]='https://github.com/JakubPietrakIntel/pytorch_sparse.git' ["pytorch_scatter"]='https://github.com/JakubPietrakIntel/pytorch_scatter.git' ["pytorch_geometric"]='https://github.com/JakubPietrakIntel/pytorch_geometric.git' ["pyg-lib"]='https://github.com/JakubPietrakIntel/pyg-lib.git')
 
 function ptsetup() {
 
@@ -44,8 +45,9 @@ function ptgitremote() {
 }
 
 function ptupdate() {
-
-	if [[ $1 == "stack" ]]; then
+	lib=$1
+	opts=$2
+	if [[ $lib == "stack" ]]; then
 		echo "*** ***** Updating full pytorch stack! ***** ***"
 		for i in ${!torchLib[@]}; do ptupdate ${torchLib[$i]}; done
 	else
@@ -53,13 +55,13 @@ function ptupdate() {
 		pttest
 		conda activate $TORCH_ENV
 		export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
-		cd $TORCH_DIR/$1
-		git pull origin master
+		cd $TORCH_DIR/$lib
+		git pull
 		git submodule sync
 		git submodule update --init --recursive
 		python setup.py clean
-		ptpip $1 --force-reinstall
-		ptgitlog $1
+		ptpip $lib --force-reinstall
+		ptgitlog $lib
 
 		printf "%0.s-" {1..10} && echo " UPDATE COMPLETED!"
 		cd ~
