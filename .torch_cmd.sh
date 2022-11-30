@@ -34,9 +34,20 @@ function ptsetup() {
 	done
 }
 
-function ptupdate() {
+function ptgitremote() {
+	for lib in ${!torchLib[@]}; do 
+		cd $TORCH_DIR/${torchLib[$lib]}
+		git remote rename origin upstream
+		git remote add origin https://github.com/JakubPietrakIntel/${torchLib[$lib]}
+		git fetch origin
+		git checkout master
+	done
+}
 
-	if [[ $1 == "stack" ]]; then
+function ptupdate() {
+	lib=$1
+	opts=$2
+	if [[ $lib == "stack" ]]; then
 		echo "*** ***** Updating full pytorch stack! ***** ***"
 		for i in ${!torchLib[@]}; do ptupdate ${torchLib[$i]}; done
 	else
@@ -44,13 +55,13 @@ function ptupdate() {
 		pttest
 		conda activate $TORCH_ENV
 		export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
-		cd $TORCH_DIR/$1
-		git pull origin master
+		cd $TORCH_DIR/$lib
+		git pull
 		git submodule sync
 		git submodule update --init --recursive
 		python setup.py clean
-		ptpip $1 --force-reinstall
-		ptgitlog $1
+		ptpip $lib --force-reinstall
+		ptgitlog $lib
 
 		printf "%0.s-" {1..10} && echo " UPDATE COMPLETED!"
 		cd ~
@@ -156,7 +167,7 @@ function ptconda() {
 	yes | conda create -n $1 python=3.9
 	conda activate $1
 	conda info
-	conda update -n base -c defaults conda
+	conda update -n base -c defaults conda -y
 	conda install -y mkl=2022.0.1
 	conda install -y mkl-include=2022.0.1
 	conda install -y gcc_linux-64 gxx_linux-64
