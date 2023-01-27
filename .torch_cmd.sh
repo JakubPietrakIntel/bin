@@ -1,13 +1,16 @@
 #!/bin/bash
 torchLib=("pytorch" "pytorch_sparse" "pytorch_scatter" "pytorch_geometric" "pyg-lib")
-declare -A torchGit=(["pytorch"]='https://github.com/pytorch/pytorch.git' ["pytorch_sparse"]='https://github.com/rusty1s/pytorch_sparse.git' ["pytorch_scatter"]='https://github.com/rusty1s/pytorch_scatter.git' ["pytorch_geometric"]='https://github.com/pyg-team/pytorch_geometric.git' ["pyg-lib"]='https://github.com/pyg-team/pyg-lib.git')
-declare -A torchGitUser=(["pytorch"]='https://github.com/JakubPietrakIntel/pytorch.git' ["pytorch_sparse"]='https://github.com/JakubPietrakIntel/pytorch_sparse.git' ["pytorch_scatter"]='https://github.com/JakubPietrakIntel/pytorch_scatter.git' ["pytorch_geometric"]='https://github.com/JakubPietrakIntel/pytorch_geometric.git' ["pyg-lib"]='https://github.com/JakubPietrakIntel/pyg-lib.git')
+#declare -A torchGit=(["pytorch"]='https://github.com/pytorch/pytorch.git' ["pytorch_sparse"]='https://github.com/rusty1s/pytorch_sparse.git' ["pytorch_scatter"]='https://github.com/rusty1s/pytorch_scatter.git' ["pytorch_geometric"]='https://github.com/pyg-team/pytorch_geometric.git' ["pyg-lib"]='https://github.com/pyg-team/pyg-lib.git')
+declare -A torchGit=(["pytorch"]='https://github.com/JakubPietrakIntel/pytorch.git' ["pytorch_sparse"]='https://github.com/JakubPietrakIntel/pytorch_sparse.git' ["pytorch_scatter"]='https://github.com/JakubPietrakIntel/pytorch_scatter.git' ["pytorch_geometric"]='https://github.com/JakubPietrakIntel/pytorch_geometric.git' ["pyg-lib"]='https://github.com/JakubPietrakIntel/pyg-lib.git')
+# TODO:
+# 1. select user repo or main
+# 2. if main sync fork master
 
 function ptsetup() {
 
 	while true; do
 		echo "Provide new env vars or press Enter to selected [default]"
-		read -p "Full path to TORCH_DIR [$TORCH_DIR], i.e. /home/usr/pyg: " dir
+		read -p "Full path to TORCH_DIR [$TORCH_DIR], i.e. pwd: " dir
 		dir=${dir:-$TORCH_DIR}
 		read -p "Name for conda env TORCH_ENV [$TORCH_ENV]: " env
 		env=${env:-$TORCH_ENV}
@@ -56,10 +59,10 @@ function ptupdate() {
 		conda activate $TORCH_ENV
 		export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
 		cd $TORCH_DIR/$lib
+		python setup.py clean
 		git pull
 		git submodule sync
 		git submodule update --init --recursive
-		python setup.py clean
 		ptpip $lib --force-reinstall
 		ptgitlog $lib
 
@@ -68,6 +71,23 @@ function ptupdate() {
 
 	fi
 }
+
+# function ptclean() {
+# 	python setup.py clean
+# 	git submodule sync
+# 	git submodule deinit -f .
+# 	git submodule update --init --recursive
+
+# 	while getopts d:f o; do
+# 		case $o in
+# 			(f) file=$OPTARG;;
+# 			(d) dir=$OPTARG;;
+# 			(*) usage
+# 		esac
+# 	done
+# 	shift "$((OPTIND - 1))"
+# 	echo Remaining arguments: "$@"	
+# }
 
 function ptinstall() {
 
@@ -101,12 +121,12 @@ function pttest() {
 
 function ptpip() {
 	if [[ $1 == "pytorch" ]]; then
-		python -m pip install -r requirements.txt >> ../install_${1}.log
-		REL_WITH_DEB_INFO=false USE_CUDA=false python -m pip install --verbose -e . $2 >> ../install_${1}.log
+		python -m pip install -r requirements.txt | tee ../install_${1}.log
+		REL_WITH_DEB_INFO=false USE_CUDA=false python setup.py develop | tee ../install_${1}.log
 	elif [[ $1 == "pyg-lib" ]]; then
-		REL_WITH_DEB_INFO=false WITH_CUDA=0 python -m pip install --verbose -e .
+		REL_WITH_DEB_INFO=false WITH_CUDA=0 python -m pip install --verbose -e . | tee ../install_${1}.log
 	else
-		python -m pip install --verbose -e . $2 >> ../install_${1}.log
+		python -m pip install --verbose -e . | tee ../install_${1}.log
 	fi
 }
 
@@ -182,7 +202,7 @@ function ptgitlog() {
 	if [[ $name != 'pyg-lib' ]]; then
 		short=${name:2}
 	else
-		short=$name
+		short="pyg_lib"
 	fi
 	printf "%0.s-" {1..10} && echo "$short Version: " && python -c "import $short; print($short.__version__)"
 	cd $TORCH_DIR/$1
