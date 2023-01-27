@@ -118,8 +118,8 @@ function pttest() {
 
 function ptpip() {
 	if [[ $1 == "pytorch" ]]; then
-		python -m pip install -r requirements.txt | tee ../install_${1}.log
-		REL_WITH_DEB_INFO=false USE_CUDA=false python setup.py develop | tee ../install_${1}.log
+		#python -m pip install -r requirements.txt | tee ../install_${1}.log
+		REL_WITH_DEB_INFO=false USE_CUDA=false python -m pip install --verbose -e . | tee ../install_${1}.log
 	elif [[ $1 == "pyg-lib" ]]; then
 		REL_WITH_DEB_INFO=false WITH_CUDA=0 python -m pip install --verbose -e . | tee ../install_${1}.log
 	else
@@ -188,8 +188,8 @@ function ptconda() {
 	conda install -y mkl=2022.0.1
 	conda install -y mkl-include=2022.0.1
 	conda install -y gcc_linux-64 gxx_linux-64
-	conda install -y astunparse numpy ninja pyyaml cmake cffi typing_extensions future six requests dataclasses pandas pytest glog
-	python -m pip install --upgrade setuptools
+	conda install -y astunparse numpy ninja pyyaml cmake cffi typing_extensions future six requests dataclasses
+	#python -m pip install --upgrade setuptools
 	python -m pip install ogb --no-deps
 	python -m pip install psutil
 }
