@@ -7,9 +7,9 @@ function ptsetup() {
 
 	while true; do
 		echo "Provide new env vars or press Enter to selected [default]"
-		read -p "Full path to TORCH_DIR [$TORCH_DIR], i.e. pwd: " dir
+		read -p "Full path to TORCH_DIR=$TORCH_DIR, i.e. $(pwd)/pyg: " dir
 		dir=${dir:-$TORCH_DIR}
-		read -p "Name for conda env TORCH_ENV [$TORCH_ENV]: " env
+		read -p "Name for conda env TORCH_ENV=$TORCH_ENV: " env
 		env=${env:-$TORCH_ENV}
 
 		ptsetdir $dir
@@ -104,7 +104,7 @@ function ptinstall() {
 		ptgitlog $1
 		#git config --global --add safe.directory $TORCH_DIR/$1
 		printf "%0.s-" {1..10} && echo " INSTALLATION COMPLETED!"
-		cd ~
+		cd $HOME
 	fi
 
 }
